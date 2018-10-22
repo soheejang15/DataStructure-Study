@@ -44,9 +44,7 @@ int  PostorderTraverse(BTreeNode * bt){
 	if(bt == NULL) return;
 	PostorderTraverse(bt->left);
 	PostorderTraverse(bt->right);
-	sum += bt->data;
-	
-	return sum;
+	return sum += bt->data;
 }
 
 BTreeNode * MakeExpTree(char exp[]);

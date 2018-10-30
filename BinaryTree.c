@@ -3,9 +3,10 @@
 #include <string.h>
 #include <ctype.h>
 
-
 // int 타입을 가지는 BTData 타입을 선언 
 typedef int BTData;
+
+typedef BTData BSTData;
 
 // 이진트리의 노드를 구조체로 선언. 
 //data/ left link (포인터) / right link (포인터)  
@@ -15,14 +16,84 @@ typedef struct _bTreeNode{
 	struct _bTreeNode * right;
 }BTreeNode;
 
+/*BTreeNode * MakeExpTree(char exp[]);
+int EvaluateExpTree(BTreeNode * bt);
+
+void ShowPrefixTypeExp(BTreeNode *bt);
+void ShowInfixTypeExp(BTreeNode *bt);
+void ShowPostfixTypeExp(BTreeNode *bt);*/
+
+void BSTMakeAndInit(BTreeNode ** pRoot);
+BSTData BSTGetNodeData(BTreeNode * bst);
+void BSTInsert(BTreeNode ** pRoot, BSTData data);
+BTreeNode * BSTSearch(BTreeNode * bst, BSTData target);
+
+BTreeNode * MakeBTreeNode(void);
+BTreeNode * GetLeftSubTree(BTreeNode * bt);
+BTreeNode * GetRightSubTree(BTreeNode * bt);
+void SetData (BTreeNode * bt, BTData data);
+void MakeLeftSubTree(BTreeNode * main, BTreeNode *sub);
+void MakeRightSubTree(BTreeNode * main, BTreeNode *sub);
+
+void BSTMakeAndInit(BTreeNode ** pRoot){
+	*pRoot = NULL;
+}
+
+BSTData BSTGetNodeData(BTreeNode * bst){
+	return GetData(bst);
+}
+
+void BSTInsert(BTreeNode ** pRoot, BSTData data){
+	BTreeNode * pNode = NULL;
+	BTreeNode * cNode = *pRoot;
+	BTreeNode * nNode = NULL;
+	
+	while(cNode != NULL){
+		if(data == GetData(cNode)) return;
+		
+		pNode = cNode;
+		
+		if(GetData(cNode) > data) cNode = GetLeftSubTree(cNode);
+		else cNode = GetRightSubTree(cNode);
+		
+	}
+	
+		nNode = MakeBTreeNode();
+		SetData(nNode,data);
+		
+		if(pNode != NULL){
+			if(data<GetData(pNode)) MakeLeftSubTree(pNode, nNode);
+			else MakeRightSubTree(pNode, nNode);
+		} else{
+			*pRoot = nNode;
+		}
+		
+		
+}
+
+BTreeNode * BSTSearch(BTreeNode * bst, BSTData target){
+	BTreeNode * cNode = bst;
+	BSTData cd;
+	
+	while(cNode != NULL){
+		cd = GetData(cNode);
+		
+		if(target == cd) return cNode;
+		else if(target < cd) cNode = GetLeftSubTree(cNode);
+		else cNode = GetRightSubTree(cNode);
+	}
+	
+	return NULL;
+}
+
 //전위 순회
 void PreorderTraverse(BTreeNode * bt){
 	if(bt == NULL) return;
-	PreorderTraverse(bt->data);
+	PreorderTraverse(bt);
 	printf("%d \n",bt->left);
 	PreorderTraverse(bt->right);
 
-} 
+}
 
 //중위순회 
 void InorderTraverse(BTreeNode * bt){
@@ -33,12 +104,6 @@ void InorderTraverse(BTreeNode * bt){
 
 }
 
-BTreeNode * MakeExpTree(char exp[]);
-int EvaluateExpTree(BTreeNode * bt);
-
-void ShowPrefixTypeExp(BTreeNode *bt);
-void ShowInfixTypeExp(BTreeNode *bt);
-void ShowPostfixTypeExp(BTreeNode *bt);
 
 
 BTreeNode * MakeBTreeNode(void){
@@ -138,7 +203,7 @@ Data SPeek(Stack * pstack){
 	return pstack->head->data;
 }
 
-BTreeNode * MakeExpTree(char exp[]){
+/*BTreeNode * MakeExpTree(char exp[]){
 	Stack stack;
 	BTreeNode * pnode;
 	
@@ -165,24 +230,9 @@ BTreeNode * MakeExpTree(char exp[]){
 
 int EvaluateExpTree(BTreeNode * bt){
 	
-}
+}*/
 
-void ShowNodeData(int data){
-	if(0<=data && data<=9)	printf("%d ",data);
-	else prinf("%c ", data);
-}
 
-void ShowPrefixTypeExp(BTreeNode * bt){
-	PreorderTraverse(bt);
-}
-
-void ShowInfixTypeExp(BTreeNode * bt){
-	InorderTraverse(bt);
-}
-
-void ShowPostfixTypeExp(BTreeNode * bt){
-	PostorderTraverse(bt);
-}
 
 /*int main(void){
 	BTreeNode * bt1 = MakeBTreeNode();
@@ -255,7 +305,7 @@ void ShowPostfixTypeExp(BTreeNode * bt){
 	return 0;
 }*/
 
-int main(void){
+/*int main(void){
 	char exp[] = "12+7*";
 	BTreeNode * eTree = MakeExpTree(exp);
 	
@@ -271,5 +321,55 @@ int main(void){
 	printf("연산의 결과: %d \n",EvaluateExpTree(eTree));
 	
 	return 0;
+}*/
+
+int main(void){
+	BTreeNode * bstRoot;
+	BTreeNode * sNode;
+	
+	BSTMakeAndInit(&bstRoot);
+	
+	BSTInsert(&bstRoot, 9);
+	BSTInsert(&bstRoot, 1);
+	BSTInsert(&bstRoot, 6);
+	BSTInsert(&bstRoot, 2);
+	BSTInsert(&bstRoot, 8);
+	BSTInsert(&bstRoot, 3);
+	BSTInsert(&bstRoot, 5);
+	
+	sNode = BSTSearch(bstRoot, 1);
+	if(sNode == NULL) printf("탐색 실패 \n");
+	else printf("탐색에 성공한 키의 값 : %d \n",BSTGetNodeData(sNode));
+	
+	sNode = BSTSearch(bstRoot,4);
+	if(sNode == NULL) printf("탐색 실패 \n");
+	else printf("탐색에 성공한 키의 값 : %d \n",BSTGetNodeData(sNode));
+	
+	sNode = BSTSearch(bstRoot,6);
+	if(sNode == NULL) printf("탐색 실패 \n");
+	else printf("탐색에 성공한 키의 값 : %d \n",BSTGetNodeData(sNode));
+	
+	sNode = BSTSearch(bstRoot,7);
+	if(sNode == NULL) printf("탐색 실패 \n");
+	else printf("탐색에 성공한 키의 값 : %d \n",BSTGetNodeData(sNode));
+
+	return 0;
 }
 
+
+void ShowNodeData(int data){
+	if(0<=data && data<=9)	printf("%d ",data);
+	else printf("%c ", data);
+}
+
+void ShowPrefixTypeExp(BTreeNode * bt){
+	PreorderTraverse(bt);
+}
+
+void ShowInfixTypeExp(BTreeNode * bt){
+	InorderTraverse(bt);
+}
+
+/*void ShowPostfixTypeExp(BTreeNode * bt){
+	PostorderTraverse(bt);
+}*/

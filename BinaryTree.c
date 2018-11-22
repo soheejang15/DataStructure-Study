@@ -35,6 +35,12 @@ void SetData (BTreeNode * bt, BTData data);
 void MakeLeftSubTree(BTreeNode * main, BTreeNode *sub);
 void MakeRightSubTree(BTreeNode * main, BTreeNode *sub);
 
+BTreeNode * BSTRemove(BTreeNode ** pRoot, BSTData target);
+void ShowIntData(int data){
+	printf("%d", data);
+}
+void BSTShowAll(BTreeNode * bst);
+
 void BSTMakeAndInit(BTreeNode ** pRoot){
 	*pRoot = NULL;
 }
@@ -323,7 +329,7 @@ int EvaluateExpTree(BTreeNode * bt){
 	return 0;
 }*/
 
-int main(void){
+/*int main(void){
 	BTreeNode * bstRoot;
 	BTreeNode * sNode;
 	
@@ -354,7 +360,105 @@ int main(void){
 	else printf("탐색에 성공한 키의 값 : %d \n",BSTGetNodeData(sNode));
 
 	return 0;
+}*/
+
+int main(void){
+	BTreeNode * bstRoot;
+	BTreeNode * sNode;
+	BSTMakeAndInit(&bstRoot);
+	
+	BSTInsert(&bstRoot,5);
+	BSTInsert(&bstRoot,8);
+	BSTInsert(&bstRoot,1);
+	BSTInsert(&bstRoot,6);
+	BSTInsert(&bstRoot,4);
+	BSTInsert(&bstRoot,9);
+	BSTInsert(&bstRoot,3);
+	BSTInsert(&bstRoot,2);
+	BSTInsert(&bstRoot,7);
+	
+	BSTShowAll(bstRoot); printf("\n");
+	sNode = BSTRemove(&bstRoot,3);
+	free(sNode);
+	
+	BSTShowAll(bstRoot); printf("\n");
+	sNode = BSTRemove(&bstRoot,8);
+	free(sNode);
+	
+	BSTShowAll(bstRoot); printf("\n");
+	sNode = BSTRemove(&bstRoot,1);
+	free(sNode);
+	
+	BSTShowAll(bstRoot); printf("\n");
+	sNode = BSTRemove(&bstRoot,6);
+	free(sNode);
+	
+	BSTShowAll(bstRoot); printf("\n");
+	return 0;
 }
+
+BTreeNode * BSTRemove(BTreeNode ** pRoot, BSTData target){
+	BTreeNode * pVRoot = MakeBTreeNode();
+	BTreeNode * pNode = pVRoot;
+	BTreeNode * cNode = pVRoot;
+	BTreeNode * dNode;
+	
+	ChangeRightSubTree(pVRoot, *pRoot);
+	
+	while(cNode != NULL && GetData(cNode) != target){
+		pNode = cNode;
+		if(target < GetData(cNode)) cNode = GetLeftSubTree(cNode);
+		else cNode = GetRightSubTree(cNode);
+	}
+	
+	if(cNode == NULL) return NULL;
+	
+	dNode = cNode;
+	
+	if(GetLeftSubTree(dNode) == NULL && GetRightSubTree(dNode) == NULL){
+		if(GetLeftSubTree(pNode) == dNode) RemoveLeftSubTree(pNode);
+		else RemoveRightSubTree(pNode);	
+	}
+	
+	else if(GetLeftSubTree(dNode) == NULL || GetRightSubTree(dNode) == NULL){
+		BTreeNode * dcNode;
+		
+		if(GetLeftSubTree(dNode) != NULL) dcNode = GetLeftSubTree(dNode);
+		else dcNode = GetRightSubTree(dNode);
+		
+		if(GetLeftSubTree(pNode) == dNode) ChangeLeftSubTree(pNode, dcNode);
+		else ChangeRightSubTree(pNode, dcNode);
+	}
+	
+	else {
+		BTreeNode * mNode = GetRightSubTree(dNode);
+		BTreeNode * mpNode = dNode;
+		int delData;
+		
+		while(GetLeftSubTree(mNode) != NULL){
+			mpNode = mNode;
+			mNode = GetLeftSubTree(mNode);
+		}
+		
+		delData = GetData(dNode);
+		SetData(dNode, GetData(mNode));
+		
+		if(GetLeftSubTree(mpNode) == mNode) ChangeLeftSubTree(mpNode, GetRightSubTree(mNode));
+		else ChangeRightSubTree(mpNode, GetRightSubTree(mNode));
+		
+		dNode = mNode;
+		SetData(dNode, delData);
+	}
+	
+	if(GetRightSubTree(pVRoot) != *pRoot) *pRoot = GetRightSubTree(pVRoot);
+	free(pVRoot);
+	return dNode;
+}
+
+void BSTShowAll(BTreeNode * bst){
+	InorderTraverse(bst);
+}
+
 
 
 void ShowNodeData(int data){
@@ -373,3 +477,5 @@ void ShowInfixTypeExp(BTreeNode * bt){
 /*void ShowPostfixTypeExp(BTreeNode * bt){
 	PostorderTraverse(bt);
 }*/
+
+
